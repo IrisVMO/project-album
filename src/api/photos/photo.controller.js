@@ -16,8 +16,8 @@ const createPhoto = async (req, res, next) => {
 
 const getPhoto = async (req, res, next) => {
   try {
-    const Photoid = req.params
-    const rs = await getOne({ Photoid })
+    const { id } = req.params
+    const rs = await getOne({ id })
     res.json(new APIResponse(true, rs))
   } catch (error) {
     next(error)

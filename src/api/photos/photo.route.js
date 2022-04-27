@@ -1,6 +1,6 @@
 const { validate } = require('express-validation')
 const { auth } = require('../middlewares/auth')
-const { createValidation, updateValidation } = require('./user.validation')
+const { createValidation, updateValidation } = require('./photo.validation')
 const {
   createPhoto,
   getPhoto,

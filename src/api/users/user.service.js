@@ -8,24 +8,20 @@ const createUser = async (email, username, password) => {
 }
 
 const getOneUser = async (filter) => {
-  const { email, username } = filter
-  const user = await User.findOne({ where: {
-    [Op.or]: [
-      {email},
-      username
-    ]
-  }})
+  console.log(filter);
+  const user = await User.findOne({ where: filter })
   return user
 }
 
 const getAllUser = async (query) => {
   const { page, records, filter } = query
-  const [totalRecords, users] = await Promise.all([User.count(),
-  User.findAll({
-    where: filter,
-    offset: ((page - 1) * records),
-    limit: records
-  })
+  const [totalRecords, users] = await Promise.all([
+    User.count(),
+    User.findAll({
+      where: filter,
+      offset: ((page - 1) * records),
+      limit: records
+    })
   ])
 
   return {
@@ -34,8 +30,8 @@ const getAllUser = async (query) => {
   }
 }
 
-const updateInforService = async (email, username, userId) => {
-  const user = await User.update({ where: userId }, { email, username })
+const updateInforService = async (email, username, id) => {
+  const user = await User.update({ where: { id } }, { email, username })
   return user
 }
 

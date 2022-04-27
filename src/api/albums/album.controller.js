@@ -2,13 +2,18 @@ const { StatusCodes } = require('http-status-codes')
 const APIError = require('../../configs/APIError')
 const { APIResponse, pagination } = require('../../configs/config')
 const { create, getOne, getAll, updateOne, deleteOne } = require('./album.service')
+const { createUserAlbum } = require('../useralbum/useralbum.model')
 
 const createAlbum = async (req, res, next) => {
   try {
     const { name, description } = req.body
+    const { _id: userId } = req.user
+    const role = 'owner'
 
-    const rs = await create(name, description)
-    res.json(new APIResponse(true, rs))
+    const album = await create(name, description)
+    const useralbum = createUserAlbum(userId, album.id, role)
+
+    res.json(new APIResponse(true, album, useralbum))
   } catch (error) {
     next(error)
   }
@@ -16,8 +21,8 @@ const createAlbum = async (req, res, next) => {
 
 const getAlbum = async (req, res, next) => {
   try {
-    const albumId = req.params
-    const rs = await getOne({ albumId })
+    const { id } = req.params
+    const rs = await getOne({ id })
     res.json(new APIResponse(true, rs))
   } catch (error) {
     next(error)
@@ -51,11 +56,23 @@ const getAllAlbum = async (req, res, next) => {
     next(error)
   }
 }
+const inviteContribute = async (req, res, next) => {
+  try {
+    const { userId } = req.body
+    const { id } = req.params
+    const role = 'contribute'
+    const rs = createUserAlbum(userId, id, role)
+
+    res.json(new APIResponse(true, rs))
+  } catch (error) {
+    next(error)
+  }
+}
 
 const deleteAlbum = async (req, res, next) => {
   try {
-    const id = req.params
-    const rs = await deleteOne(id)
+    const { id } = req.params
+    const rs = await deleteOne({ id })
   } catch (error) {
     next(error)
   }

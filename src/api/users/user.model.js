@@ -20,10 +20,10 @@ const User = postgres.define(
       type: DataTypes.STRING,
       allowNull: false
     },
-    otp: {
-      type: DataTypes.STRING,
-      allowNull: true
-    },
+    // otp: {
+    //   type: DataTypes.STRING,
+    //   allowNull: false
+    // },
     password: {
       type: DataTypes.STRING,
       allowNull: false

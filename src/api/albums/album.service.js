@@ -10,8 +10,8 @@ const create = async (name, description) => {
   const album = await Album.create({ name, description })
 }
 
-const getOne = async (albumid) => {
-  const album = await Album.findOne({ where: albumid })
+const getOne = async (id) => {
+  const album = await Album.findOne({ where: id })
   if (!album) {
     throw new APIError(StatusCodes.BAD_REQUEST, 'Invalid album')
   }
@@ -32,7 +32,7 @@ const getAll = async () => {
 }
 
 const updateOne = async (id, name, description, status) => {
-  const album = await Album.update({ where: id }, { name, description, status })
+  const album = await Album.update({ where: { id } }, { name, description, status })
   return album
 }
 

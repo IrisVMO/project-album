@@ -45,21 +45,43 @@ const signup = async (req, res, next) => {
 const login = async (req, res, next) => {
   try {
     const { email, username, password } = req.body
+    if (!email && !username) {
+      throw new APIError(StatusCodes.BAD_REQUEST, 'Please enter email or username')
+    }
+    if (email) {
+      const user = await getOneUser({ email })
 
-    const user = await getOneUser({ email, username })
+      if (!user) {
+        throw new APIError(StatusCodes.BAD_REQUEST, 'Email or username wrong')
+      }
 
-    if (!user) {
-      throw new APIError(StatusCodes.BAD_REQUEST, 'Email or username wrong')
+      const result = bcrypt.compareSync(password, user.password)
+      if (result) {
+        const accessToken = jwt.sign({ _id: user.id }, jwtAccessKey, { expiresIn: '10days' })
+        const refreshToken = jwt.sign({ _id: user.id }, jwtRefreshKey, { expiresIn: '10days' })
+
+        res.json(new APIResponse(true, { message: 'Login is successfully', token: { accessToken, refreshToken } }))
+      } else {
+        throw new APIError(StatusCodes.BAD_REQUEST, 'username or password wrong')
+      }
     }
 
-    const result = bcrypt.compareSync(password, user.password)
-    if (result) {
-      const accessToken = jwt.sign({ _id: user.id }, jwtAccessKey, { expiresIn: '10days' })
-      const refreshToken = jwt.sign({ _id: user.id }, jwtRefreshKey, { expiresIn: '10days' })
+    if (username) {
+      const user = await getOneUser({ username })
 
-      res.json(new APIResponse(true, { message: 'Login is successfully', token: { accessToken, refreshToken } }))
-    } else {
-      throw new APIError(StatusCodes.BAD_REQUEST, 'username or password wrong')
+      if (!user) {
+        throw new APIError(StatusCodes.BAD_REQUEST, 'Email or username wrong')
+      }
+
+      const result = bcrypt.compareSync(password, user.password)
+      if (result) {
+        const accessToken = jwt.sign({ _id: user.id }, jwtAccessKey, { expiresIn: '10days' })
+        const refreshToken = jwt.sign({ _id: user.id }, jwtRefreshKey, { expiresIn: '10days' })
+
+        res.json(new APIResponse(true, { message: 'Login is successfully', token: { accessToken, refreshToken } }))
+      } else {
+        throw new APIError(StatusCodes.BAD_REQUEST, 'username or password wrong')
+      }
     }
   } catch (error) {
     next(error)

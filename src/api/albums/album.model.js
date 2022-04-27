@@ -8,7 +8,7 @@ const Album = postgres.define(
     id: {
       type: DataTypes.UUID,
       defaultValue: DataTypes.UUIDV4,
-      primarykey: true,
+      primaryKey: true,
       allowNull: false
     },
     name: {

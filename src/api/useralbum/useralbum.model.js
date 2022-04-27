@@ -15,13 +15,13 @@ const UserAlbum = postgres.define(
       allowNull: false
     },
     role: {
-      type: DataTypes.ARRAY,
+      type: DataTypes.STRING,
       allowNull: false
     }
   }
 )
 
-Photo.belongsTo(UserAlbum, { foreignKey: 'userId' })
-Photo.belongsTo(UserAlbum, { foreignKey: 'albumId' })
+UserAlbum.belongsTo(UserAlbum, { foreignKey: 'userId' })
+UserAlbum.belongsTo(UserAlbum, { foreignKey: 'albumId' })
 
 module.exports = UserAlbum

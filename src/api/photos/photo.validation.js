@@ -21,7 +21,7 @@ const updateValidation = {
   })
 }
 
-const getAllAlbumValidate = {
+const getAllValidate = {
   params: Joi.object({
     id: Joi.string()
       .required
@@ -32,9 +32,25 @@ const getAllAlbumValidate = {
   })
 }
 
+const getOneValidation = {
+  params: Joi.object({
+    albumId: Joi.string()
+      .required
+  })
+}
+
+const deleteValidation = {
+  params: Joi.object({
+    albumId: Joi.string()
+      .required
+  })
+}
+
 module.exports = {
   createValidation,
   updateValidation,
-  getAllAlbumValidate,
-  
+  getAllValidate,
+  getOneValidation,
+  deleteValidation
+
 }

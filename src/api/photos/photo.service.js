@@ -1,44 +1,31 @@
-const Photo = require('./album.model')
+const Photo = require('./photo.model')
 const { StatusCodes } = require('http-status-codes')
 const APIError = require('../../configs/APIError')
-const {
-  getAllUserPhoto,
-  getOneUserPhoto
-} = require('../userPhoto/userphoto.service')
 
 const create = async (name, description) => {
-  const Photo = await Photo.create({ name, description })
+  const photo = await Photo.create({ name, description })
+  return photo
 }
 
-const getOne = async (Photoid) => {
-  const photo = await Photo.findOne({ where: Photoid })
-  if (!photo) {
-    throw new APIError(StatusCodes.BAD_REQUEST, 'Invalid Photo')
-  }
+const getOne = async (id) => {
+  const photo = await Photo.findOne({ where: id })
 
-  const userPhoto = await getOneUserPhoto(Photoid)
-
-  const role = userPhoto.role
-  if (!role.include('owner') || !role.include('contribute')) {
-    throw new APIError(StatusCodes.BAD_REQUEST, 'Do not have permission open Photo')
-  }
-
-  return Photo
+  return photo
 }
 
 const getAll = async () => {
-  const Photo = await Photo.findAll()
-  return Photo
+  const photo = await Photo.findAll()
+  return photo
 }
 
 const updateOne = async (id, name, description, status) => {
-  const Photo = await Photo.update({ where: id }, { name, description, status })
-  return Photo
+  const photo = await Photo.update({ where: id }, { name, description, status })
+  return photo
 }
 
 const deleteOne = async (id) => {
-  const Photo = await Photo.destroy({ where: id })
-  return Photo
+  const photo = await Photo.destroy({ where: id })
+  return photo
 }
 
 module.exports = {

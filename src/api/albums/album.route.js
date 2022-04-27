@@ -3,10 +3,10 @@ const { auth } = require('../middlewares/auth')
 const { 
   createValidation,
   updateValidation,
-  getAllAlbumValidate,
-  getAlbum,
-  deleteAlbumValidation
-} = require('./user.validation')
+  getOneValidation,
+  getAllValidation,
+  deleteValidation
+} = require('./album.validation')
 const {
   createAlbum,
   getAlbum,
@@ -18,9 +18,9 @@ const express = require('express')
 const routes = express.Router()
 
 routes.post('/', auth, validate(createValidation), createAlbum)
-routes.get('/:id', auth, validate(getAlbum), getAlbum)
-routes.get('/', auth, validate(updateValidation), updateAlbum)
-routes.patch('/:id', auth, validate(getAllAlbumValidate), getAllAlbum)
-routes.delete('/:id', auth, validate(deleteAlbumValidation), deleteAlbum)
+routes.get('/:id', auth, validate(getOneValidation), getAlbum)
+routes.get('/:id', auth, validate(getAllValidation), getAllAlbum)
+routes.patch('/:id', auth, validate(updateValidation), updateAlbum)
+routes.delete('/:id', auth, validate(deleteValidation), deleteAlbum)
 
 module.exports = routes
