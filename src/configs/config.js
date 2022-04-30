@@ -1,5 +1,5 @@
 require('dotenv-safe').config()
-
+const host = process.env.HOST
 const port = process.env.PORT
 const jwtAccessKey = process.env.JWT_KEY_ACCESS
 const jwtRefreshKey = process.env.JWT_KEY_REFRESH
@@ -22,7 +22,7 @@ const APIResponse = class {
 module.exports = {
   pagination: {
     page: 1,
-    records: 20
+    recordsAPage: 20
   },
   usernameDB,
   passwordDB,
@@ -32,6 +32,7 @@ module.exports = {
   jwtAccessKey,
   jwtRefreshKey,
   mongodbUri,
+  host,
   port,
   emailHelper,
   passwordEmail,

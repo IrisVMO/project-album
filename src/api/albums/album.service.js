@@ -32,12 +32,14 @@ const getOneAlbumService = async (id, userId) => {
   }
 
   const { status } = album
+
   if (status.toString() === 'Private') {
     const albumUser = await AlbumUser.findOne({ where: { userId, albumId: id } })
 
     if (!albumUser) {
       throw new APIError(StatusCodes.FORBIDDEN, 'Do not have permission open album')
     }
+    
     const { status } = albumUser
 
     if (status === 'Inactive') {
@@ -55,7 +57,9 @@ const getAllAlbumService = async (query, userId) => {
     include: 'albums',
     where: { id: userId }
   })
+
   const { albums } = user
+
   const rs = albums.filter(listAlbum => listAlbum.album_user.status === 'Active')
   return rs
 }

@@ -1,8 +1,12 @@
 const path = require('path')
-const { StatusCodes } = require('http-status-codes')
-const APIError = require('../../configs/APIError')
 const { APIResponse, pagination } = require('../../configs/config')
-const { addToAlbumService, getAllPhotoService, updateOnePhotoService, deleteOnePhotoService } = require('./photo.service')
+const {
+  addToAlbumService,
+  movePhotoService,
+  getAllPhotoService,
+  updateOnePhotoService,
+  deleteOnePhotoService
+} = require('./photo.service')
 
 const addPhoto = async (req, res, next) => {
   try {
@@ -18,11 +22,25 @@ const addPhoto = async (req, res, next) => {
   }
 }
 
+const movePhoto = async (req, res, next) => {
+  try {
+    const { id } = req.params
+    const { albumId } = req.body
+
+    const rs = await movePhotoService(albumId, id)
+
+    res.json(new APIResponse(true, rs))
+  } catch (error) {
+    next(error)
+  }
+}
+
 const updatePhoto = async (req, res, next) => {
   try {
     const { id } = req.params
     const { name, status } = req.body
-    const rs = await updateOnePhotoService(id, name, description, status)
+
+    const rs = await updateOnePhotoService(id, name, status)
     res.json(new APIResponse(true, rs))
   } catch (error) {
     next(error)
@@ -38,7 +56,7 @@ const getAllPhoto = async (req, res, next) => {
       filter
     }
 
-    const rs = await getAllPhotoService(query)
+    const rs = await getAllPhotoService(query, filter)
 
     res.json(new APIResponse(true, rs))
   } catch (error) {
@@ -50,6 +68,7 @@ const deletePhoto = async (req, res, next) => {
   try {
     const id = req.params
     const rs = await deleteOnePhotoService(id)
+    res.json(new APIResponse(true, rs))
   } catch (error) {
     next(error)
   }
@@ -57,6 +76,7 @@ const deletePhoto = async (req, res, next) => {
 
 module.exports = {
   addPhoto,
+  movePhoto,
   updatePhoto,
   getAllPhoto,
   deletePhoto,

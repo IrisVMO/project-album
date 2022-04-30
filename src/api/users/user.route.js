@@ -3,9 +3,17 @@ const { validate } = require('express-validation')
 const { auth } = require('../middlewares/auth')
 const { authRefresh } = require('../middlewares/auth.refresh')
 const { uploadSingle } = require('../middlewares/uploadFile')
-const { sigupValidation, loginValidation, statusValidation, upAvaValidation, refreshTokenValidation, updateValidation } = require('./user.validation')
+const {
+  sigupValidation,
+  loginValidation,
+  statusValidation,
+  upAvaValidation,
+  refreshTokenValidation,
+  updateValidation
+} = require('./user.validation')
 const {
   signup,
+  verifyAccount,
   login,
   refreshNewToken,
   getInf,
@@ -55,6 +63,8 @@ routes.get('/refreshtoken', authRefresh, validate(refreshTokenValidation), refre
  */
 
 routes.post('/signup', validate(sigupValidation), signup)
+
+routes.patch('/verify/:token', verifyAccount)
 
 routes.post('/login', validate(loginValidation), login)
 

@@ -18,7 +18,7 @@ const User = postgres.define(
       type: DataTypes.STRING,
       allowNull: false
     },
-    otp: {
+    Token: {
       type: DataTypes.STRING,
       allowNull: true
     },
@@ -57,8 +57,8 @@ const AlbumUser = postgres.define('album_user', {
 Album.belongsToMany(User, { through: AlbumUser, as: 'users', foreignKey: 'albumId' })
 User.belongsToMany(Album, { through: AlbumUser, as: 'albums', foreignKey: 'userId' })
 
-// AlbumUser.sync({ alter: true })
-// .catch(Error)
+AlbumUser.sync({ alter: true })
+.catch(Error)
 
 User.sync({ alter: true })
   .catch(Error)

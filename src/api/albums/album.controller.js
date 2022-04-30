@@ -1,8 +1,15 @@
 const { StatusCodes } = require('http-status-codes')
 const jwt = require('jsonwebtoken')
 const APIError = require('../../configs/APIError')
-const { APIResponse, pagination, port, jwtAccessKey, emailHelper } = require('../../configs/config')
-const { transporter } = require('../Helpers/email')
+const {
+  APIResponse,
+  pagination,
+  port,
+  host,
+  jwtAccessKey,
+  emailHelper
+} = require('../../configs/config')
+const transporter = require('../Helpers/email')
 const { getOneUser } = require('../users/user.service')
 const {
   createAlbumService,
@@ -36,20 +43,26 @@ const inviteContributeAlbum = async (req, res, next) => {
       getOneUser({ id: userId }),
       getOneAlbumService(id, req.user.id)
     ])
-    console.log(user);
-    // console.log(album);
+
     const { email } = user
+
     const rs = await inviteContributeAlbumService(user, album, id)
 
     const token = jwt.sign(userId, jwtAccessKey)
     const options = {
       from: emailHelper,
       to: email,
-      subject: `Wellcom contribute to ${album.name}`,
-      html: `<p>${user.usrename} invite you to ${album.name}
-        <a href='http://localhost:${port}/api/albums/${token}?albumid=${album.id}&&status=Active'>Accept</a>
+      subject: `Wellcom contribute to the album ${album.name}`,
+      html: `<p>${user.username} invite you to a contribute album ${album.name}
+        <a 
+          href=
+            'http://${host}:${port}/api/albums/${token}?albumid=${album.id}&&status=Active'
+        >Accept</a>
         || 
-        <a href='http://localhost:${port}/api/albums/${token}?albumid=${album.id}&&status=Invalid'>Reject</a>
+        <a 
+          href=
+            'http://${host}:${port}/api/albums/${token}?albumid=${album.id}&&status=Invalid'
+        >Reject</a>
         </p>`
     }
 
@@ -60,12 +73,14 @@ const inviteContributeAlbum = async (req, res, next) => {
     next(error)
   }
 }
+
 const replyInviteContributeAlbum = async (req, res, next) => {
   try {
     const { accessToken } = req.params
     const { status, albumid: albumId } = req.query
     const decode = jwt.verify(accessToken, jwtAccessKey)
     const userId = decode._id
+
     const user = await getOneUser({ id: decode._id })
     if (!user) {
       throw new APIError(StatusCodes.UNAUTHORIZED, 'Don\'t have permission')
@@ -97,7 +112,7 @@ const updateAlbum = async (req, res, next) => {
     const { name, description, status } = req.body
 
     const rs = await updateOneAlbumService(id, name, description, status)
-    res.json(new APIResponse(true, {message:'Update album successfully', rs}))
+    res.json(new APIResponse(true, { message: 'Update album successfully', rs }))
   } catch (error) {
     next(error)
   }

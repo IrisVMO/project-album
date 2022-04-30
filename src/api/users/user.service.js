@@ -1,11 +1,9 @@
 const { User } = require('./user.model')
-const { Op } = require('sequelize');
-const APIError = require('../../configs/APIError');
-const { StatusCodes } = require('http-status-codes');
-const e = require('express');
+const { Op } = require('sequelize')
+
 
 const createUser = async (email, username, password) => {
-  const user = User.create({ username, email, password });
+  const user = User.create({ username, email, password })
   return user
 }
 
@@ -18,19 +16,14 @@ const getOneUser = async (filter) => {
   if (!username) {
     username = ''
   }
-  if(!id) {
+  if (!id) {
     const user = await User.findOne({
-      where: {
-        [Op.or]: [
-          { email },
-          { username }
-        ]
-      }
+      where: { [Op.or]: [{ email }, { username }] }
     })
-  
+
     return user
   }
-  console.log({id});
+
   const user = await User.findByPk(id)
 
   return user
@@ -38,13 +31,13 @@ const getOneUser = async (filter) => {
 }
 
 const getAllUser = async (query) => {
-  const { page, records, filter } = query
+  const { page, recordsAPage, filter } = query
   const [totalRecords, users] = await Promise.all([
     User.count(),
     User.findAll({
       where: filter,
       offset: ((page - 1) * records),
-      limit: records
+      limit: recordsAPage
     })
   ])
 
@@ -54,25 +47,33 @@ const getAllUser = async (query) => {
   }
 }
 
-const updateInforService = async (email, username, id) => {
-  const user = await User.update({ where: { id } }, { email, username })
-  return user
+const setStatusService = async (id, status) => {
+  const rs = await User.update({ status }, { where: { id } })
+  return rs
+}
+
+const updateInforService = async (filter) => {
+  const { username, email, token, id } = filter
+
+  const rs = await User.update({ email, username, token }, { where: { id } })
+  return rs
 }
 
 const upPathfile = async (userId, link) => {
-  const user = await User.update({ where: userId }, { linkImage: link })
-  return user
+  const rs = await User.update({ linkImage: link }, { where: userId })
+  return rs
 }
 
 const deleteUserService = async (id) => {
-  const user = await User.destroy({ where: id })
-  return user
+  const rs = await User.destroy({ where: { id } })
+  return rs
 }
 
 module.exports = {
   createUser,
   getOneUser,
   getAllUser,
+  setStatusService,
   updateInforService,
   upPathfile,
   deleteUserService
