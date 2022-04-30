@@ -65,9 +65,9 @@ const signup = async (req, res, next) => {
 const verifyAccount = async (req, res, next) => {
   try {
     const { token } = req.param
-
     const decode = jwt.verify(token, jwtAccessKey)
-    const rs = await updateInfor({ id: decode.id })
+
+    const rs = await updateInforService({ token: null, id: decode.id })
 
     if (rs[0] === 0) {
       throw new APIError(StatusCodes.BAD_GATEWAY, 'Verify your account fail')
