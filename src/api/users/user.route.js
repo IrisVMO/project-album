@@ -3,13 +3,14 @@ const { validate } = require('express-validation')
 const { auth } = require('../middlewares/auth')
 const { authRefresh } = require('../middlewares/auth.refresh')
 const { uploadSingle } = require('../middlewares/uploadFile')
-const { sigupValidation, loginValidation, updateValidation } = require('./user.validation')
+const { sigupValidation, loginValidation, statusValidation, upAvaValidation, refreshTokenValidation, updateValidation } = require('./user.validation')
 const {
   signup,
   login,
   refreshNewToken,
   getInf,
   getAll,
+  setStatus,
   upAvatar,
   updateInfor,
   deleteOneUser
@@ -21,7 +22,7 @@ routes.get('/infor', auth, getInf)
 
 routes.get('/alluser', auth, getAll)
 
-routes.get('/refreshtoken', authRefresh, refreshNewToken)
+routes.get('/refreshtoken', authRefresh, validate(refreshTokenValidation), refreshNewToken)
 
 /**
  * @swagger
@@ -57,9 +58,11 @@ routes.post('/signup', validate(sigupValidation), signup)
 
 routes.post('/login', validate(loginValidation), login)
 
+routes.patch('/status', auth, validate(statusValidation), setStatus)
+
 routes.patch('/update', auth, validate(updateValidation), updateInfor)
 
-routes.patch('/avatar', auth, uploadSingle, upAvatar)
+routes.patch('/avatar', auth, validate(upAvaValidation), uploadSingle, upAvatar)
 
 routes.delete('/delete', auth, deleteOneUser)
 

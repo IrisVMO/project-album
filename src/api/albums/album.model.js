@@ -1,7 +1,5 @@
 const { DataTypes } = require('sequelize')
-
 const postgres = require('../../configs/postgres')
-
 const Album = postgres.define(
   'albums',
   {
@@ -19,10 +17,10 @@ const Album = postgres.define(
       type: DataTypes.STRING,
       allowNull: false
     },
-    current_status:{
+    status: {
       type: DataTypes.ENUM,
       values: ['Public', 'Private'],
-      allowNull: true,
+      allowNull: false,
       defaultValue: 'Public'
     }
   },
@@ -32,4 +30,7 @@ const Album = postgres.define(
   }
 )
 
-module.exports = Album
+Album.sync({ alter: true })
+  .catch(Error)
+
+module.exports = { Album }

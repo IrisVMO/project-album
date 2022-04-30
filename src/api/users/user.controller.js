@@ -5,7 +5,7 @@ const path = require('path')
 const APIError = require('../../configs/APIError')
 const transporter = require('../Helpers/email')
 const { APIResponse, emailHelper, pagination, jwtAccessKey, jwtRefreshKey } = require('../../configs/config')
-const { createUser, getOneUser, getAllUser, updateInforService, upPathfile, deleteUserService } = require('./user.service')
+const { createUser, getOneUser, getAllUser, setStatusService, updateInforService, upPathfile, deleteUserService } = require('./user.service')
 
 const signup = async (req, res, next) => {
   try {
@@ -34,9 +34,9 @@ const signup = async (req, res, next) => {
       text: 'Active email'
     }
 
-    await transporter.sendMail(options)
+    // await transporter.sendMail(options)
 
-    res.json(new APIResponse(true, { user }))
+    res.json(new APIResponse(true, { message: 'Please check mail to verify', user }))
   } catch (error) {
     next(error)
   }
@@ -45,44 +45,23 @@ const signup = async (req, res, next) => {
 const login = async (req, res, next) => {
   try {
     const { email, username, password } = req.body
-    if (!email && !username) {
-      throw new APIError(StatusCodes.BAD_REQUEST, 'Please enter email or username')
-    }
-    if (email) {
-      const user = await getOneUser({ email })
 
-      if (!user) {
-        throw new APIError(StatusCodes.BAD_REQUEST, 'Email or username wrong')
-      }
+    const user = await getOneUser({ email, username })
 
-      const result = bcrypt.compareSync(password, user.password)
-      if (result) {
-        const accessToken = jwt.sign({ _id: user.id }, jwtAccessKey, { expiresIn: '10days' })
-        const refreshToken = jwt.sign({ _id: user.id }, jwtRefreshKey, { expiresIn: '10days' })
-
-        res.json(new APIResponse(true, { message: 'Login is successfully', token: { accessToken, refreshToken } }))
-      } else {
-        throw new APIError(StatusCodes.BAD_REQUEST, 'username or password wrong')
-      }
+    if (!user) {
+      throw new APIError(StatusCodes.BAD_REQUEST, 'Email or username wrong')
     }
 
-    if (username) {
-      const user = await getOneUser({ username })
+    const result = bcrypt.compareSync(password, user.password)
+    if (result) {
+      const accessToken = jwt.sign({ _id: user.id }, jwtAccessKey, { expiresIn: '10days' })
+      const refreshToken = jwt.sign({ _id: user.id }, jwtRefreshKey, { expiresIn: '10days' })
 
-      if (!user) {
-        throw new APIError(StatusCodes.BAD_REQUEST, 'Email or username wrong')
-      }
-
-      const result = bcrypt.compareSync(password, user.password)
-      if (result) {
-        const accessToken = jwt.sign({ _id: user.id }, jwtAccessKey, { expiresIn: '10days' })
-        const refreshToken = jwt.sign({ _id: user.id }, jwtRefreshKey, { expiresIn: '10days' })
-
-        res.json(new APIResponse(true, { message: 'Login is successfully', token: { accessToken, refreshToken } }))
-      } else {
-        throw new APIError(StatusCodes.BAD_REQUEST, 'username or password wrong')
-      }
+      res.json(new APIResponse(true, { message: 'Login is successfully', token: { accessToken, refreshToken } }))
+    } else {
+      throw new APIError(StatusCodes.BAD_REQUEST, 'username or password wrong')
     }
+
   } catch (error) {
     next(error)
   }
@@ -120,9 +99,20 @@ const getAll = async (req, res, next) => {
   }
 }
 
+const setStatus = async (req, res, next) => {
+  try {
+    const { id } = req.user
+    const { status } = req.body
+
+    const rs = await setStatusService(id, status)
+    res.json(new APIResponse(true, rs))
+  } catch (error) {
+    next(error)
+  }
+}
 const updateInfor = async (req, res, next) => {
   try {
-    const { _id: userId } = req.user
+    const { id: userId } = req.user
     const { email, username } = req.body
 
     const [emailIsExisted, usernameIsExisted] = await Promise.all([
@@ -146,7 +136,7 @@ const updateInfor = async (req, res, next) => {
 
 const upAvatar = async (req, res, next) => {
   try {
-    const { _id: userId } = req.user
+    const { id: userId } = req.user
     const link = path.join('./images', req.file.originalname)
 
     const rs = await upPathfile(userId, link)
@@ -159,7 +149,7 @@ const upAvatar = async (req, res, next) => {
 
 const deleteOneUser = async (req, res, next) => {
   try {
-    const { _id: userId } = req.user
+    const { id: userId } = req.user
     const rs = await deleteUserService(userId)
 
     res.json(new APIResponse(true, rs))
@@ -174,6 +164,7 @@ module.exports = {
   refreshNewToken,
   getInf,
   getAll,
+  setStatus,
   upAvatar,
   updateInfor,
   deleteOneUser

@@ -1,16 +1,40 @@
-const User = require('./user.model')
-
-const { Op } = require('sequelize')
+const { User } = require('./user.model')
+const { Op } = require('sequelize');
+const APIError = require('../../configs/APIError');
+const { StatusCodes } = require('http-status-codes');
+const e = require('express');
 
 const createUser = async (email, username, password) => {
-  const user = User.create({ username, email, password })
+  const user = User.create({ username, email, password });
   return user
 }
 
 const getOneUser = async (filter) => {
-  console.log(filter);
-  const user = await User.findOne({ where: filter })
+  let { email, username, id } = filter
+
+  if (!email) {
+    email = ''
+  }
+  if (!username) {
+    username = ''
+  }
+  if(!id) {
+    const user = await User.findOne({
+      where: {
+        [Op.or]: [
+          { email },
+          { username }
+        ]
+      }
+    })
+  
+    return user
+  }
+  console.log({id});
+  const user = await User.findByPk(id)
+
   return user
+
 }
 
 const getAllUser = async (query) => {
@@ -44,6 +68,7 @@ const deleteUserService = async (id) => {
   const user = await User.destroy({ where: id })
   return user
 }
+
 module.exports = {
   createUser,
   getOneUser,

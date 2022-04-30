@@ -3,8 +3,6 @@ const { Joi } = require('express-validation')
 const createValidation = {
   body: Joi.object({
     name: Joi.string()
-      .required(),
-    description: Joi.string()
       .required()
   })
 }
@@ -21,7 +19,7 @@ const updateValidation = {
   })
 }
 
-const getAllValidate = {
+const getAllValidation = {
   params: Joi.object({
     id: Joi.string()
       .required
@@ -29,13 +27,6 @@ const getAllValidate = {
   query: Joi.object({
     page: Joi.number(),
     filter: Joi.string()
-  })
-}
-
-const getOneValidation = {
-  params: Joi.object({
-    albumId: Joi.string()
-      .required
   })
 }
 
@@ -49,8 +40,6 @@ const deleteValidation = {
 module.exports = {
   createValidation,
   updateValidation,
-  getAllValidate,
-  getOneValidation,
+  getAllValidation,
   deleteValidation
-
 }

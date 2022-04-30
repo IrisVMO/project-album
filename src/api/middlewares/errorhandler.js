@@ -4,14 +4,14 @@ const { APIResponse } = require('../../configs/config')
 const { ValidationError } = require('express-validation')
 
 function errorHandler (err, req, res, next) {
-  console.log(err)
+  console.log(err);
   const code = err.statusCode || err.code || StatusCodes.INTERNAL_SERVER_ERROR
   let errorCode = err.code
   let { message } = err
 
   if (err instanceof ValidationError) {
-    const { message } = err.details.body[0]
-    return res.status(code).json(new APIResponse(false, { code, message }))
+    // const { message } = err.details.body[0]
+    return res.status(code).json(new APIResponse(false, { code, err }))
   } else {
     switch (code) {
       case StatusCodes.BAD_REQUEST:
@@ -38,6 +38,7 @@ function errorHandler (err, req, res, next) {
         message = message || ''
         errorCode = 200
     }
+    
     return res.status(errorCode).json(
       snakecaseKeys(
         code

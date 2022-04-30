@@ -1,9 +1,9 @@
 const { validate } = require('express-validation')
 const { auth } = require('../middlewares/auth')
-const { createValidation, updateValidation } = require('./photo.validation')
+const { uploadSingle } = require('../middlewares/uploadFile')
+const { createValidation, updateValidation, getAllValidation, deleteValidation } = require('./photo.validation')
 const {
-  createPhoto,
-  getPhoto,
+  addPhoto,
   updatePhoto,
   getAllPhoto,
   deletePhoto,
@@ -11,10 +11,9 @@ const {
 const express = require('express')
 const routes = express.Router()
 
-routes.post('/', auth, validate(createValidation), createPhoto)
-routes.get('/:id', auth, getPhoto)
-routes.get('/', auth, validate(updateValidation), updatePhoto)
-routes.patch('/:id', auth, getAllPhoto)
-routes.delete('/:id', auth, deletePhoto)
+routes.post('/:albumId', auth, uploadSingle, addPhoto)
+routes.patch('/', auth, validate(updateValidation), updatePhoto)
+routes.get('/', auth, validate(getAllValidation), getAllPhoto)
+routes.delete('/:id', auth, validate(deleteValidation), deletePhoto)
 
 module.exports = routes

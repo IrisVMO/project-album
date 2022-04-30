@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize')
-const User = require('../users/user.model')
-const Album = require('../albums/album.model')
 const postgres = require('../../configs/postgres')
+const { Album } = require('../albums/album.model')
+const { User } = require('../users/user.model')
 
 const Photo = postgres.define(
   'photos',
@@ -28,10 +28,10 @@ const Photo = postgres.define(
       type: DataTypes.STRING,
       allowNull: false
     },
-    current_status:{
+    status: {
       type: DataTypes.ENUM,
       values: ['Public', 'Private'],
-      allowNull: true,
+      allowNull: false,
       defaultValue: 'Public'
     }
   },
@@ -40,8 +40,12 @@ const Photo = postgres.define(
     timestamps: true
   }
 )
+Photo.belongsTo(Album, { as: 'albums', foreignKey: 'albumId' })
+Album.hasMany(Photo, { as: 'photos', foreignKey: 'albumId' })
+Photo.belongsTo(User, { as: 'users', foreignKey: 'userId' })
+User.hasMany(Photo, { as: 'photos', foreignKey: 'userId' })
 
-Photo.belongsTo(User, { foreignKey: 'userId' })
-Photo.belongsTo(Album, { foreignKey: 'albumId' })
+Photo.sync({ alter: true })
+  .catch(Error)
 
-module.exports = Photo
+module.exports = { Photo }

@@ -1,8 +1,6 @@
 const { DataTypes } = require('sequelize')
-
+const { Album } = require('../albums/album.model')
 const postgres = require('../../configs/postgres')
-const Album = require('../albums/album.model')
-
 const User = postgres.define(
   'users',
   {
@@ -20,18 +18,18 @@ const User = postgres.define(
       type: DataTypes.STRING,
       allowNull: false
     },
-    // otp: {
-    //   type: DataTypes.STRING,
-    //   allowNull: false
-    // },
+    otp: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
     password: {
       type: DataTypes.STRING,
       allowNull: false
     },
-    current_status: {
+    status: {
       type: DataTypes.ENUM,
       values: ['Available', 'Busy', 'Offline'],
-      allowNull: true,
+      allowNull: false,
       defaultValue: 'Available'
     }
   },
@@ -41,4 +39,28 @@ const User = postgres.define(
   }
 )
 
-module.exports = User
+const AlbumUser = postgres.define('album_user', {
+  role: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  status: {
+    type: DataTypes.ENUM,
+    values: ['Active', 'Inactive'],
+    allowNull: false,
+    defaultValue: 'Active'
+  },
+},
+  { timestamps: false }
+)
+
+Album.belongsToMany(User, { through: AlbumUser, as: 'users', foreignKey: 'albumId' })
+User.belongsToMany(Album, { through: AlbumUser, as: 'albums', foreignKey: 'userId' })
+
+// AlbumUser.sync({ alter: true })
+// .catch(Error)
+
+User.sync({ alter: true })
+  .catch(Error)
+
+module.exports = { User, AlbumUser }

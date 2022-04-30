@@ -1,4 +1,5 @@
 const Sequelize = require('sequelize')
+
 const {
   usernameDB,
   passwordDB,
@@ -16,7 +17,10 @@ const db = new Sequelize(devDB, usernameDB, passwordDB, {
     min: 0,
     acquire: 30000,
     idle: 10000
-  }
+  },
 })
+
+db.sync({ alter: true })
+  .catch(Error)
 
 module.exports = db

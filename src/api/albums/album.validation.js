@@ -29,14 +29,18 @@ const getOneValidation = {
 }
 
 const getAllValidation = {
-  params: Joi.object({
-    id: Joi.string()
-      .required
-  }),
   query: Joi.object({
     page: Joi.number(),
     filter: Joi.string()
   })
+}
+
+const inviteContributeValidation = {
+  body: Joi.object({
+    userIdInvite: Joi.string()
+    .required()
+  })
+  
 }
 
 const deleteValidation = {
@@ -51,5 +55,7 @@ module.exports = {
   updateValidation,
   getOneValidation,
   getAllValidation,
+  inviteContributeValidation,
   deleteValidation
+  
 }
