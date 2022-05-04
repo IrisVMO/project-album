@@ -6,7 +6,7 @@ const { APIResponse, jwtAccessKey } = require('../../configs/config')
 const decodeUserToken = async (token) => {
   try {
     const decode = jwt.verify(token, jwtAccessKey)
-    const user = await getOneUser({ id: decode._id })
+    const user = await getOneUser({ id: decode.id })
     return user
   } catch (error) {
     return null

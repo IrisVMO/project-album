@@ -9,7 +9,9 @@ const {
   emailHelper,
   pagination,
   jwtAccessKey,
-  jwtRefreshKey
+  jwtRefreshKey,
+  host,
+  port
 } = require('../../configs/config')
 const {
   createUser,
@@ -41,7 +43,7 @@ const signup = async (req, res, next) => {
 
     const user = await createUser(email, username, passwordHash)
 
-    const token = jwt.sign({ _id: user.id }, jwtAccessKey)
+    const token = jwt.sign({ id: user.id }, jwtAccessKey)
 
     const options = {
       from: emailHelper,
@@ -54,14 +56,16 @@ const signup = async (req, res, next) => {
         </p>`
     }
 
-    await updateInforService({ token, id: user.id })
+    const rs = await updateInforService({ token, id: user.id })
+
     await transporter.sendMail(options)
 
-    res.json(new APIResponse(true, { message: 'Please check mail to verify', user }))
+    res.json(new APIResponse(true, { message: 'Please check mail to verify', user, rs }))
   } catch (error) {
     next(error)
   }
 }
+
 const verifyAccount = async (req, res, next) => {
   try {
     const { token } = req.param
@@ -87,18 +91,18 @@ const login = async (req, res, next) => {
     if (!user) {
       throw new APIError(StatusCodes.BAD_REQUEST, 'Email or username wrong')
     }
-    if (user.token) {
-      throw new APIError(
-        StatusCodes.BAD_REQUEST,
-        `Please verify account in your email ${user.email}`
-      )
-    }
+    // if (user.token) {
+    //   throw new APIError(
+    //     StatusCodes.BAD_REQUEST,
+    //     `Please verify account in your email ${user.email}`
+    //   )
+    // }
 
     const result = bcrypt.compareSync(password, user.password)
 
     if (result) {
-      const accessToken = jwt.sign({ _id: user.id }, jwtAccessKey, { expiresIn: '10days' })
-      const refreshToken = jwt.sign({ _id: user.id }, jwtRefreshKey, { expiresIn: '10days' })
+      const accessToken = jwt.sign({ id: user.id }, jwtAccessKey, { expiresIn: '10days' })
+      const refreshToken = jwt.sign({ id: user.id }, jwtRefreshKey, { expiresIn: '10days' })
       res.json(new APIResponse(true, {
         message: 'Login is successfully',
         token: { accessToken, refreshToken }
@@ -114,8 +118,8 @@ const login = async (req, res, next) => {
 const refreshNewToken = (req, res, next) => {
   try {
     const user = req.user
-    const accessToken = jwt.sign({ _id: user._id }, jwtAccessKey, { expiresIn: '10days' })
-    const refreshToken = jwt.sign({ _id: user._id }, jwtRefreshKey, { expiresIn: '10days' })
+    const accessToken = jwt.sign({ id: user.id }, jwtAccessKey, { expiresIn: '10days' })
+    const refreshToken = jwt.sign({ id: user.id }, jwtRefreshKey, { expiresIn: '10days' })
     res.json(new APIResponse(true, { message: 'Refresh token is successfully', token: { accessToken, refreshToken } }))
   } catch (error) {
     next(error)

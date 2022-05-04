@@ -1,4 +1,3 @@
-const { Op } = require('sequelize')
 const { StatusCodes } = require('http-status-codes')
 const APIError = require('../../configs/APIError')
 const { Album } = require('./album.model')
@@ -7,8 +6,7 @@ const { User, AlbumUser } = require('../users/user.model')
 const createAlbumService = async (name, description, user) => {
   const album = await Album.create({ name, description })
 
-  await user.addAlbum(album, { through: { role: 'Owner' } });
-
+  await user.addAlbum(album, { through: { role: 'Owner' } })
   return album
 }
 
@@ -28,7 +26,7 @@ const replyInviteContributeAlbumService = async (userId, albumId, status) => {
 const getOneAlbumService = async (id, userId) => {
   const album = await Album.findOne({ where: { id }, include: ['photos', 'users'] })
   if (!album) {
-    throw new APIError(StatusCodes.BAD_REQUEST, 'Invalid album')
+    throw new APIError(StatusCodes.NOT_FOUND, 'Not found the album')
   }
 
   const { status } = album
@@ -39,7 +37,7 @@ const getOneAlbumService = async (id, userId) => {
     if (!albumUser) {
       throw new APIError(StatusCodes.FORBIDDEN, 'Do not have permission open album')
     }
-    
+
     const { status } = albumUser
 
     if (status === 'Inactive') {
@@ -51,8 +49,7 @@ const getOneAlbumService = async (id, userId) => {
 }
 
 const getAllAlbumService = async (query, userId) => {
-  const { page, records, filter } = query
-
+  // const { page, records, filter } = query
   const user = await User.findOne({
     include: 'albums',
     where: { id: userId }
@@ -70,9 +67,9 @@ const updateOneAlbumService = async (id, name, description, status) => {
 }
 
 const deleteOneAlbumService = async (albumId, userId) => {
-  const albumUser = await AlbumUser.findOne({ where: { albumId, userId }})
-  if ( !albumUser ) {
-    throw new APIError(StatusCodes.BAD_REQUEST, 'Invalid album to delete')
+  const albumUser = await AlbumUser.findOne({ where: { albumId, userId } })
+  if (!albumUser) {
+    throw new APIError(StatusCodes.NOT_FOUND, 'Not found the album to delete')
   }
 
   const { role } = albumUser

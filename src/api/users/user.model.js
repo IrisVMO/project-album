@@ -18,7 +18,7 @@ const User = postgres.define(
       type: DataTypes.STRING,
       allowNull: false
     },
-    Token: {
+    token: {
       type: DataTypes.STRING,
       allowNull: true
     },
@@ -49,16 +49,16 @@ const AlbumUser = postgres.define('album_user', {
     values: ['Active', 'Inactive'],
     allowNull: false,
     defaultValue: 'Active'
-  },
+  }
 },
-  { timestamps: false }
+{ timestamps: false }
 )
 
 Album.belongsToMany(User, { through: AlbumUser, as: 'users', foreignKey: 'albumId' })
 User.belongsToMany(Album, { through: AlbumUser, as: 'albums', foreignKey: 'userId' })
 
 AlbumUser.sync({ alter: true })
-.catch(Error)
+  .catch(Error)
 
 User.sync({ alter: true })
   .catch(Error)

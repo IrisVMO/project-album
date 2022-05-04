@@ -3,9 +3,8 @@ const host = process.env.HOST
 const port = process.env.PORT
 const jwtAccessKey = process.env.JWT_KEY_ACCESS
 const jwtRefreshKey = process.env.JWT_KEY_REFRESH
-const mongodbUri = process.env.NODE_ENV === 'test' ? process.env.MONGODB_URI_TEST : process.env.MONGODB_URI
 const emailHelper = process.env.EMAIL
-const passwordEmail= process.env.PASSWORD
+const passwordEmail = process.env.PASSWORD
 const usernameDB = process.env.USER_DB
 const passwordDB = process.env.PASSWORD_DB
 const devDB = process.env.DB_DEV
@@ -31,7 +30,6 @@ module.exports = {
   dialectDB,
   jwtAccessKey,
   jwtRefreshKey,
-  mongodbUri,
   host,
   port,
   emailHelper,

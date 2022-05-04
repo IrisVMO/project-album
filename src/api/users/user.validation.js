@@ -60,7 +60,6 @@ const refreshTokenValidation = {
   })
 }
 
-
 module.exports = {
   sigupValidation,
   loginValidation,

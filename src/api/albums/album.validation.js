@@ -12,7 +12,12 @@ const createValidation = {
 const updateValidation = {
   params: Joi.object({
     id: Joi.string()
-      .required
+      .guid({
+        version: [
+          'uuidv4'
+        ]
+      })
+      .required()
   }),
   body: Joi.object({
     name: Joi.string(),
@@ -23,8 +28,13 @@ const updateValidation = {
 
 const getOneValidation = {
   params: Joi.object({
-    albumId: Joi.string()
-      .required
+    id: Joi.string()
+      .guid({
+        version: [
+          'uuidv4'
+        ]
+      })
+      .required()
   })
 }
 
@@ -38,15 +48,39 @@ const getAllValidation = {
 const inviteContributeValidation = {
   body: Joi.object({
     userIdInvite: Joi.string()
-    .required()
+      .guid({
+        version: [
+          'uuidv4'
+        ]
+      })
+      .required()
   })
-  
+
+}
+
+const replyValidation = {
+  query: Joi.object({
+    albumid: Joi.string()
+      .guid({
+        version: [
+          'uuidv4'
+        ]
+      })
+      .required(),
+    status: Joi.string()
+      .required()
+  })
 }
 
 const deleteValidation = {
   params: Joi.object({
-    albumId: Joi.string()
-      .required
+    id: Joi.string()
+      .guid({
+        version: [
+          'uuidv4'
+        ]
+      })
+      .required()
   })
 }
 
@@ -56,6 +90,7 @@ module.exports = {
   getOneValidation,
   getAllValidation,
   inviteContributeValidation,
+  replyValidation,
   deleteValidation
-  
+
 }

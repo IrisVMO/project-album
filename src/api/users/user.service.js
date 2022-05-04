@@ -1,7 +1,6 @@
 const { User } = require('./user.model')
 const { Op } = require('sequelize')
 
-
 const createUser = async (email, username, password) => {
   const user = User.create({ username, email, password })
   return user
@@ -27,7 +26,6 @@ const getOneUser = async (filter) => {
   const user = await User.findByPk(id)
 
   return user
-
 }
 
 const getAllUser = async (query) => {
@@ -36,7 +34,7 @@ const getAllUser = async (query) => {
     User.count(),
     User.findAll({
       where: filter,
-      offset: ((page - 1) * records),
+      offset: ((page - 1) * recordsAPage),
       limit: recordsAPage
     })
   ])

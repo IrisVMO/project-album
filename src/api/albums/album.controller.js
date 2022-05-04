@@ -29,7 +29,7 @@ const createAlbum = async (req, res, next) => {
     const user = await getOneUser({ id })
     const album = await createAlbumService(name, description, user)
 
-    res.json(new APIResponse(true, { album }))
+    res.json(new APIResponse(true, album))
   } catch (error) {
     next(error)
   }
@@ -37,10 +37,10 @@ const createAlbum = async (req, res, next) => {
 
 const inviteContributeAlbum = async (req, res, next) => {
   try {
-    const { userIdInvite: userId } = req.body
+    const { userIdInvite } = req.body
     const { id } = req.params
     const [user, album] = await Promise.all([
-      getOneUser({ id: userId }),
+      getOneUser({ id: userIdInvite }),
       getOneAlbumService(id, req.user.id)
     ])
 
@@ -48,7 +48,7 @@ const inviteContributeAlbum = async (req, res, next) => {
 
     const rs = await inviteContributeAlbumService(user, album, id)
 
-    const token = jwt.sign(userId, jwtAccessKey)
+    const token = jwt.sign({ id: userIdInvite }, jwtAccessKey, { expiresIn: '10days' })
     const options = {
       from: emailHelper,
       to: email,
@@ -58,15 +58,15 @@ const inviteContributeAlbum = async (req, res, next) => {
           href=
             'http://${host}:${port}/api/albums/${token}?albumid=${album.id}&&status=Active'
         >Accept</a>
-        || 
+        ||
         <a 
           href=
-            'http://${host}:${port}/api/albums/${token}?albumid=${album.id}&&status=Invalid'
+            'http://${host}:${port}/api/albums/${token}?albumid=${album.id}&&status=Inactive'
         >Reject</a>
         </p>`
     }
 
-    await transporter.sendMail(options)
+    transporter.sendMail(options)
 
     res.json(new APIResponse(true, rs))
   } catch (error) {
@@ -79,16 +79,16 @@ const replyInviteContributeAlbum = async (req, res, next) => {
     const { accessToken } = req.params
     const { status, albumid: albumId } = req.query
     const decode = jwt.verify(accessToken, jwtAccessKey)
-    const userId = decode._id
+    const userId = decode.id
 
-    const user = await getOneUser({ id: decode._id })
+    const user = await getOneUser({ id: decode.id })
     if (!user) {
       throw new APIError(StatusCodes.UNAUTHORIZED, 'Don\'t have permission')
     }
 
     const rs = await replyInviteContributeAlbumService(userId, albumId, status)
 
-    res.json(new APIResponse(true, { message: 'Acepted', rs }))
+    res.json(new APIResponse(true, { message: status, rs }))
   } catch (error) {
     next(error)
   }
@@ -100,7 +100,7 @@ const getAlbum = async (req, res, next) => {
     const { id } = req.params
 
     const album = await getOneAlbumService(id, userId)
-    res.json(new APIResponse(true, { album }))
+    res.json(new APIResponse(true, album))
   } catch (error) {
     next(error)
   }
@@ -155,5 +155,5 @@ module.exports = {
   getAllAlbum,
   inviteContributeAlbum,
   replyInviteContributeAlbum,
-  deleteAlbum,
+  deleteAlbum
 }
