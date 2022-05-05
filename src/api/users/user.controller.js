@@ -22,6 +22,7 @@ const {
   upPathfile,
   deleteUserService
 } = require('./user.service')
+const { decodeUserToken } = require('../middlewares/auth')
 
 const signup = async (req, res, next) => {
   try {
@@ -43,7 +44,7 @@ const signup = async (req, res, next) => {
 
     const user = await createUser(email, username, passwordHash)
 
-    const token = jwt.sign({ id: user.id }, jwtAccessKey)
+    const tokenVerify = jwt.sign({ id: user.id }, jwtAccessKey)
 
     const options = {
       from: emailHelper,
@@ -52,15 +53,15 @@ const signup = async (req, res, next) => {
       html:
         `<p>
           Please verify your account
-          <a href='http://${host}:${port}/api/users/verify/${token}>Verify Account</a>
+          <a href='http://${host}:${port}/api/users/verify/${tokenVerify}'>Verify Account</a>
         </p>`
     }
 
-    const rs = await updateInforService({ token, id: user.id })
+    await updateInforService({ tokenVerify, id: user.id })
 
-    await transporter.sendMail(options)
+    transporter.sendMail(options)
 
-    res.json(new APIResponse(true, { message: 'Please check mail to verify', user, rs }))
+    res.json(new APIResponse(true, { message: 'Please check mail to verify', user, tokenVerify }))
   } catch (error) {
     next(error)
   }
@@ -68,14 +69,14 @@ const signup = async (req, res, next) => {
 
 const verifyAccount = async (req, res, next) => {
   try {
-    const { token } = req.param
-    const decode = jwt.verify(token, jwtAccessKey)
+    const { tokenVerify } = req.params
+    const user = await decodeUserToken(tokenVerify)
 
-    const rs = await updateInforService({ token: null, id: decode.id })
-
-    if (rs[0] === 0) {
-      throw new APIError(StatusCodes.BAD_GATEWAY, 'Verify your account fail')
+    if (!user) {
+      throw new APIError(StatusCodes.BAD_REQUEST, 'Failed to verify your account ')
     }
+
+    const rs = await updateInforService({ tokenVerify: null, id: user.id })
     res.json(new APIResponse(true, rs))
   } catch (error) {
     next(error)
@@ -91,7 +92,7 @@ const login = async (req, res, next) => {
     if (!user) {
       throw new APIError(StatusCodes.BAD_REQUEST, 'Email or username wrong')
     }
-    // if (user.token) {
+    // if (user.tokenVerify) {
     //   throw new APIError(
     //     StatusCodes.BAD_REQUEST,
     //     `Please verify account in your email ${user.email}`

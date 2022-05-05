@@ -18,13 +18,17 @@ const User = postgres.define(
       type: DataTypes.STRING,
       allowNull: false
     },
-    token: {
+    tokenVerify: {
       type: DataTypes.STRING,
       allowNull: true
     },
     password: {
       type: DataTypes.STRING,
       allowNull: false
+    },
+    linkImageAvatar: {
+      type: DataTypes.STRING,
+      allowNull: true
     },
     status: {
       type: DataTypes.ENUM,

@@ -34,21 +34,27 @@ const routes = express.Router()
  *   post:
  *     tags:
  *       - Photo
- *     summary: Add new photo to album
+ *     summary: uploads an image
+ *     operationId: uploadFile
+ *     Content-Type:
+ *     - multipart/form-data; boundary=MyBoundary
+ *     produces:
+ *     - application/json
  *     parameters:
- *      - in: body
- *        name: body
- *        schema:
- *          type: object
- *          properties:
- *            name:
- *              type: string
- *            albumId:
- *              type: string
- *              format: uuid
- *            image:
- *              type: file
- *        required: false
+ *      - in: formData
+ *        name: name
+ *        required: true
+ *        type: string
+ *      - in: formData
+ *        name: albumId
+ *        required: true
+ *        type: string
+ *        format: uuid
+ *      - in: formData
+ *        name: image
+ *        description: file to upload
+ *        required: true
+ *        type: file
  *     description: Created photo object
  *     responses:
  *       200:
@@ -62,31 +68,18 @@ routes.post('/', auth, uploadSingle, addPhoto)
 
 /**
  * @swagger
- * /api/photos/{id}:
+ * /api/photos/getone/{id}:
  *   get:
- *     summary: Add new photo to album
+ *     summary: Get one photo
  *     tags:
  *       - Photo
  *     parameters:
- *      - name: id
- *        in: path
- *        description: Photo id need to be get
+ *      - in: path
+ *        name: albumid
  *        required: true
  *        type: string
  *        format: uuid
- *      - in: body
- *        name: body
- *        required: true
- *        schema:
- *          type: object
- *          properties:
- *            photoname:
- *              type: string
- *            email:
- *              type: string
- *            password:
- *              type: string
- *        description: Created photo object
+ *        description: Album id to delete
  *     responses:
  *       200:
  *         description: Photo Added Successfully.
@@ -97,39 +90,30 @@ routes.post('/', auth, uploadSingle, addPhoto)
  *     security:
  *     - accessToken: []
  */
-routes.get('/:id', auth, getPhoto)
+routes.get('/getone/:id', auth, getPhoto)
 /**
  * @swagger
- * /api/photos:
+ * /api/photos/getall:
  *   get:
  *     summary: Get all photos
  *     tags:
  *       - Photo
  *     parameters:
- *      - in: body
- *        name: body
- *        required: true
- *        schema:
- *          type: object
- *          properties:
- *            photoname:
- *              type: string
- *            email:
- *              type: string
- *            password:
- *              type: string
- *        description: Created photo object
+ *      - in: query
+ *        name: page
+ *        type: number
+ *      - in: query
+ *        name: filter
+ *        type: string
  *     responses:
  *       200:
- *         description: photo Added Successfully.
+ *         description: Get all photos Successfully.
  *       400:
  *         description: Bad Request
- *       409:
- *         description: Conflict
  *     security:
  *     - accessToken: []
  */
-routes.get('/', auth, validate(getAllValidation), getAllPhoto)
+routes.get('/getall', auth, validate(getAllValidation), getAllPhoto)
 
 /**
  * @swagger

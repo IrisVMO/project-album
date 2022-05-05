@@ -12,7 +12,7 @@ const addToAlbumService = async (name, link, userId, albumId) => {
   if (status !== 'Active') {
     throw new APIError(
       StatusCodes.FORBIDDEN,
-      'Don\'t have permission to add photos to the album')
+      'Please respond to the invitation to contribute album')
   }
 
   const photo = await Photo.create({ name, link, userId, albumId })

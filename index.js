@@ -16,9 +16,10 @@ dbConnect
   .catch(err => console.log(`Error: ${err}`))
 
 app.use(morgan('tiny'))
-app.use(express.json())
+app.use(express.json({ limit: '50mb' }))
+app.use(require('body-parser').json())
 app.use(express.static('images'))
-app.use(express.urlencoded({ extended: true }))
+app.use(express.urlencoded({ extended: true, limit: '50mb' }))
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocs))
 
 app.use('/api/users', require('./src/api/users/user.route'))

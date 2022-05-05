@@ -32,15 +32,6 @@ const updateValidation = {
 }
 
 const getAllValidation = {
-  params: Joi.object({
-    id: Joi.string()
-      .guid({
-        version: [
-          'uuidv4'
-        ]
-      })
-      .required
-  }),
   query: Joi.object({
     page: Joi.number(),
     filter: Joi.string()

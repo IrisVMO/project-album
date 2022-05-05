@@ -1,13 +1,11 @@
 const express = require('express')
 const { validate } = require('express-validation')
-const { auth } = require('../middlewares/auth')
-const { authRefresh } = require('../middlewares/auth.refresh')
+const { auth, authRefresh } = require('../middlewares/auth')
 const { uploadSingle } = require('../middlewares/uploadFile')
 const {
   sigupValidation,
   loginValidation,
   statusValidation,
-  upAvaValidation,
   refreshTokenValidation,
   updateValidation
 } = require('./user.validation')
@@ -99,7 +97,7 @@ routes.post('/signup', validate(sigupValidation), signup)
  *       409:
  *         description: Conflict
  */
-routes.patch('/verify/:token', verifyAccount)
+routes.patch('/verify/:tokenVerify', verifyAccount)
 
 /**
  * @swagger
@@ -329,7 +327,7 @@ routes.patch('/update', auth, validate(updateValidation), updateInfor)
  *     security:
  *     - accessToken: []
  */
-routes.patch('/avatar', auth, validate(upAvaValidation), uploadSingle, upAvatar)
+routes.patch('/avatar', auth, uploadSingle, upAvatar)
 
 /**
  * @swagger

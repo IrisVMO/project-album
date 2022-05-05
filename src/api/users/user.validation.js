@@ -46,16 +46,9 @@ const statusValidation = {
   })
 }
 
-const upAvaValidation = {
-  body: Joi.object({
-    image: Joi.string()
-      .required()
-  })
-}
-
 const refreshTokenValidation = {
   query: Joi.object({
-    refreshToken: Joi.object()
+    refreshToken: Joi.string()
       .required()
   })
 }
@@ -65,6 +58,5 @@ module.exports = {
   loginValidation,
   updateValidation,
   statusValidation,
-  upAvaValidation,
   refreshTokenValidation
 }

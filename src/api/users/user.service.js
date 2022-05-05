@@ -51,14 +51,13 @@ const setStatusService = async (id, status) => {
 }
 
 const updateInforService = async (filter) => {
-  const { username, email, token, id } = filter
-
-  const rs = await User.update({ email, username, token }, { where: { id } })
+  const { username, email, tokenVerify, id } = filter
+  const rs = await User.update({ email, username, tokenVerify }, { where: { id } })
   return rs
 }
 
-const upPathfile = async (userId, link) => {
-  const rs = await User.update({ linkImage: link }, { where: userId })
+const upPathfile = async (id, link) => {
+  const rs = await User.update({ linkImageAvatar: link }, { where: { id } })
   return rs
 }
 

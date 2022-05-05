@@ -61,7 +61,7 @@ routes.post('/', auth, validate(createValidation), createAlbum)
 
 /**
  * @swagger
- * /api/albums/{albumId}:
+ * /api/albums/getone/{id}:
  *   get:
  *     summary: Get album
  *     tags:
@@ -72,26 +72,12 @@ routes.post('/', auth, validate(createValidation), createAlbum)
  *        description: Album id need to be get
  *        required: true
  *        type: uuid
- *      - in: body
- *        name: body
- *        required: true
- *        schema:
- *          type: object
- *          properties:
- *            albumname:
- *              type: string
- *            email:
- *              type: string
- *            password:
- *              type: string
- *        description: Created album object
+ *        description: Get one album
  *     responses:
  *       200:
- *         description: album Added Successfully.
+ *         description: ALbum get Successfully.
  *       400:
  *         description: Bad Request
- *       409:
- *         description: Conflict
  *     security:
  *     - accessToken: []
  */
@@ -99,32 +85,16 @@ routes.get('/getone/:id', auth, validate(getOneValidation), getAlbum)
 
 /**
  * @swagger
- * /api/albums/allalbum:
+ * /api/albums/getall:
  *   get:
  *     summary: Get all album with role owner and contribue
  *     tags:
  *       - Album
- *     parameters:
- *      - in: body
- *        name: body
- *        required: true
- *        schema:
- *          type: object
- *          properties:
- *            albumname:
- *              type: string
- *            email:
- *              type: string
- *            password:
- *              type: string
- *        description: Created album object
  *     responses:
  *       200:
- *         description: album Added Successfully.
+ *         description: Get all album Successfully.
  *       400:
  *         description: Bad Request
- *       409:
- *         description: Conflict
  *     security:
  *     - accessToken: []
  */
@@ -138,8 +108,8 @@ routes.get('/getall', auth, getAllAlbum)
  *     tags:
  *       - Album
  *     parameters:
- *      - name: id
- *        in: path
+ *      - in: path
+ *        name: id
  *        description: Album id need to be update
  *        required: true
  *        type: string
@@ -172,7 +142,7 @@ routes.patch('/:id', auth, validate(updateValidation), updateAlbum)
 
 /**
  * @swagger
- * /api/albums/invite/{albumId}:
+ * /api/albums/invite/{id}:
  *   patch:
  *     summary: Invite another person to contribute the album
  *     tags:
@@ -186,22 +156,19 @@ routes.patch('/:id', auth, validate(updateValidation), updateAlbum)
  *          properties:
  *            userIdInvite:
  *              type: string
+ *              format: uuid
  *        description: Invite another person to contribute the album
- *      - in: params
- *        required: true
- *        schema:
- *          type: object
- *          properties:
- *            id:
- *              type: string
+ *      - in: path
+ *        name: id
+ *        type: string
+ *        format: uuid
+ *        description: Album id to invite another person
  *
  *     responses:
  *       200:
- *         description: album Added Successfully.
+ *         description: Invite another persion Successfully.
  *       400:
  *         description: Bad Request
- *       409:
- *         description: Conflict
  *     security:
  *     - accessToken: []
  */
@@ -215,57 +182,49 @@ routes.post('/invite/:id', auth, validate(inviteContributeValidation), inviteCon
  *     tags:
  *       - Album
  *     parameters:
- *      - in: body
- *        name: body
+ *      - in: query
+ *        name: status
  *        required: true
- *        schema:
- *          type: object
- *          properties:
- *            albumname:
- *              type: string
- *            email:
- *              type: string
- *            password:
- *              type: string
- *        description: Created album object
+ *        type: string
+ *        enum:
+ *          - Active
+ *          - Inactive
+ *      - in: query
+ *        name: albumid
+ *        required: true
+ *        type: string
+ *        format: uuid
+ *      - in: path
+ *        name: accessToken
+ *        required: true
+ *        type: string
  *     responses:
  *       200:
- *         description: album Added Successfully.
+ *         description: Reply Successfully.
  *       400:
  *         description: Bad Request
- *       409:
- *         description: Conflict
  */
 routes.patch('/reply/:accessToken', validate(replyValidation), replyInviteContributeAlbum)
 
 /**
  * @swagger
- * /api/albums/{albumId}:
+ * /api/albums/{id}:
  *   delete:
  *     summary: Delete a album
  *     tags:
  *       - Album
  *     parameters:
- *      - in: body
- *        name: body
+ *      - in: path
+ *        name: albumid
  *        required: true
- *        schema:
- *          type: object
- *          properties:
- *            albumname:
- *              type: string
- *            email:
- *              type: string
- *            password:
- *              type: string
- *        description: Created album object
+ *        type: string
+ *        format: uuid
+ *        description: Album id to delete
  *     responses:
  *       200:
- *         description: album Added Successfully.
+ *         description: Delete Successfully.
  *       400:
  *         description: Bad Request
- *       409:
- *         description: Conflict
  *     security:
  *     - accessToken: []
  */
