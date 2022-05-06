@@ -1,6 +1,6 @@
 const express = require('express')
 const { validate } = require('express-validation')
-const { auth, authRefresh } = require('../middlewares/auth')
+const { auth } = require('../middlewares/auth')
 const { uploadSingle } = require('../middlewares/uploadFile')
 const {
   sigupValidation,
@@ -70,34 +70,24 @@ routes.post('/signup', validate(sigupValidation), signup)
 
 /**
  * @swagger
- * /api/users/verify:
- *   patch:
- *     summary: Create new user
+ * /api/users/verify/{tokenVerify}:
+ *   get:
+ *     summary: Verify account
  *     tags:
  *       - User
  *     parameters:
- *      - in: body
- *        name: body
+ *      - in: path
+ *        name: tokenVerify
  *        required: true
- *        schema:
- *          type: object
- *          properties:
- *            username:
- *              type: string
- *            email:
- *              type: string
- *            password:
- *              type: string
- *        description: Created user object
+ *        type: string
+ *        description: Token to verify account
  *     responses:
  *       200:
- *         description: User Added Successfully.
+ *         description: Verify account uccessfully.
  *       400:
  *         description: Bad Request
- *       409:
- *         description: Conflict
  */
-routes.patch('/verify/:tokenVerify', verifyAccount)
+routes.get('/verify/:tokenVerify', verifyAccount)
 
 /**
  * @swagger
@@ -122,11 +112,9 @@ routes.patch('/verify/:tokenVerify', verifyAccount)
  *        description: Created user object
  *     responses:
  *       200:
- *         description: User Added Successfully.
+ *         description: Login successfully.
  *       400:
  *         description: Bad Request
- *       409:
- *         description: Conflict
  */
 routes.post('/login', validate(loginValidation), login)
 
@@ -138,26 +126,12 @@ routes.post('/login', validate(loginValidation), login)
  *     tags:
  *       - User
  *     parameters:
- *      - in: body
- *        name: body
- *        required: true
- *        schema:
- *          type: object
- *          properties:
- *            username:
- *              type: string
- *            email:
- *              type: string
- *            password:
- *              type: string
- *        description: Created user object
+ *      - in: path
  *     responses:
  *       200:
- *         description: User Added Successfully.
+ *         description: Get infor successfully.
  *       400:
  *         description: Bad Request
- *       409:
- *         description: Conflict
  *     security:
  *     - accessToken: []
  */
@@ -167,30 +141,21 @@ routes.get('/infor', auth, getInf)
  * @swagger
  * /api/users/alluser:
  *   get:
- *     summary: Create new user
+ *     summary: Get all users
  *     tags:
  *       - User
  *     parameters:
- *      - in: body
- *        name: body
- *        required: true
- *        schema:
- *          type: object
- *          properties:
- *            username:
- *              type: string
- *            email:
- *              type: string
- *            password:
- *              type: string
- *        description: Created user object
+ *      - in: query
+ *        name: filter
+ *        type: string
+ *      - in: query
+ *        name: page
+ *        type: number
  *     responses:
  *       200:
- *         description: User Added Successfully.
+ *         description: Get all users successfully
  *       400:
  *         description: Bad Request
- *       409:
- *         description: Conflict
  *     security:
  *     - accessToken: []
  */
@@ -200,63 +165,46 @@ routes.get('/alluser', auth, getAll)
  * @swagger
  * /api/users/refreshtoken:
  *   get:
- *     summary: Create new user
+ *     summary: Refresh token
  *     tags:
  *       - User
  *     parameters:
- *      - in: body
- *        name: body
+ *      - in: query
+ *        name: refreshToken
  *        required: true
- *        schema:
- *          type: object
- *          properties:
- *            username:
- *              type: string
- *            email:
- *              type: string
- *            password:
- *              type: string
- *        description: Created user object
+ *        type: string
  *     responses:
  *       200:
- *         description: User Added Successfully.
+ *         description: Refresh token successfully
  *       400:
  *         description: Bad Request
- *       409:
- *         description: Conflict
  *     security:
  *     - refreshToken: []
  */
-routes.get('/refreshtoken', authRefresh, validate(refreshTokenValidation), refreshNewToken)
+routes.get('/refreshtoken', validate(refreshTokenValidation), refreshNewToken)
 
 /**
  * @swagger
  * /api/users/status:
  *   patch:
- *     summary: Create new user
+ *     summary: Update status active account
  *     tags:
  *       - User
  *     parameters:
  *      - in: body
- *        name: body
+ *        name: status
  *        required: true
- *        schema:
- *          type: object
- *          properties:
- *            username:
- *              type: string
- *            email:
- *              type: string
- *            password:
- *              type: string
- *        description: Created user object
+ *        type: string
+ *        enum:
+ *          - Available
+ *          - Busy
+ *          - Offline
+ *        description: Status to update
  *     responses:
  *       200:
- *         description: User Added Successfully.
+ *         description: Update status successfully.
  *       400:
  *         description: Bad Request
- *       409:
- *         description: Conflict
  *     security:
  *     - accessToken: []
  */
@@ -267,13 +215,12 @@ routes.patch('/status', auth, validate(statusValidation), setStatus)
  * @swagger
  * /api/users/update:
  *   patch:
- *     summary: Create new user
+ *     summary: Update user
  *     tags:
  *       - User
  *     parameters:
  *      - in: body
  *        name: body
- *        required: true
  *        schema:
  *          type: object
  *          properties:
@@ -281,16 +228,12 @@ routes.patch('/status', auth, validate(statusValidation), setStatus)
  *              type: string
  *            email:
  *              type: string
- *            password:
- *              type: string
- *        description: Created user object
+ *        description: Update user object
  *     responses:
  *       200:
- *         description: User Added Successfully.
+ *         description: User update successfully.
  *       400:
  *         description: Bad Request
- *       409:
- *         description: Conflict
  *     security:
  *     - accessToken: []
  */
@@ -300,30 +243,25 @@ routes.patch('/update', auth, validate(updateValidation), updateInfor)
  * @swagger
  * /api/users/avatar:
  *   patch:
- *     summary: Create new user
  *     tags:
  *       - User
+ *     summary: Update avatar
+ *     operationId: uploadFile
+ *     Content-Type:
+ *     - multipart/form-data; boundary=MyBoundary
+ *     produces:
+ *     - application/json
  *     parameters:
- *      - in: body
- *        name: body
+ *      - in: formData
+ *        name: image
+ *        description: file to upload
  *        required: true
- *        schema:
- *          type: object
- *          properties:
- *            username:
- *              type: string
- *            email:
- *              type: string
- *            password:
- *              type: string
- *        description: Created user object
+ *        type: file
  *     responses:
  *       200:
- *         description: User Added Successfully.
+ *         description: Update avatar Successfully.
  *       400:
  *         description: Bad Request
- *       409:
- *         description: Conflict
  *     security:
  *     - accessToken: []
  */
@@ -333,30 +271,16 @@ routes.patch('/avatar', auth, uploadSingle, upAvatar)
  * @swagger
  * /api/users/delete:
  *   delete:
- *     summary: Create new user
+ *     summary: Delete user
  *     tags:
  *       - User
  *     parameters:
  *      - in: body
- *        name: body
- *        required: true
- *        schema:
- *          type: object
- *          properties:
- *            username:
- *              type: string
- *            email:
- *              type: string
- *            password:
- *              type: string
- *        description: Created user object
  *     responses:
  *       200:
- *         description: User Added Successfully.
+ *         description: Delete user successfully.
  *       400:
  *         description: Bad Request
- *       409:
- *         description: Conflict
  *     security:
  *     - accessToken: []
  */

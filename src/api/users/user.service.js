@@ -2,7 +2,8 @@ const { User } = require('./user.model')
 const { Op } = require('sequelize')
 
 const createUser = async (email, username, password) => {
-  const user = User.create({ username, email, password })
+  const key = Math.floor(Math.random() * 1000000)
+  const user = User.create({ username, email, password, key })
   return user
 }
 
@@ -23,7 +24,9 @@ const getOneUser = async (filter) => {
     return user
   }
 
-  const user = await User.findByPk(id)
+  const user = await User.findOne({
+    where: { id }
+  })
 
   return user
 }
@@ -33,6 +36,9 @@ const getAllUser = async (query) => {
   const [totalRecords, users] = await Promise.all([
     User.count(),
     User.findAll({
+      attributes: {
+        exclude: ['password', 'key']
+      },
       where: filter,
       offset: ((page - 1) * recordsAPage),
       limit: recordsAPage

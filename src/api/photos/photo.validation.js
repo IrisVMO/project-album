@@ -10,6 +10,13 @@ const createValidation = {
           'uuidv4'
         ]
       })
+      .required(),
+    userId: Joi.string()
+      .guid({
+        version: [
+          'uuidv4'
+        ]
+      })
       .required()
   })
 }

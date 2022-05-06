@@ -67,12 +67,12 @@ routes.post('/', auth, validate(createValidation), createAlbum)
  *     tags:
  *       - Album
  *     parameters:
- *      - name: id
- *        in: path
+ *      - in: path
+ *        name: id
  *        description: Album id need to be get
  *        required: true
- *        type: uuid
- *        description: Get one album
+ *        type: string
+ *        format: uuid
  *     responses:
  *       200:
  *         description: ALbum get Successfully.
@@ -90,6 +90,13 @@ routes.get('/getone/:id', auth, validate(getOneValidation), getAlbum)
  *     summary: Get all album with role owner and contribue
  *     tags:
  *       - Album
+ *     parameters:
+ *     - in: query
+ *       name: page
+ *       type: number
+ *     - in: query
+ *       name: filter
+ *       type: string
  *     responses:
  *       200:
  *         description: Get all album Successfully.
@@ -143,7 +150,7 @@ routes.patch('/:id', auth, validate(updateValidation), updateAlbum)
 /**
  * @swagger
  * /api/albums/invite/{id}:
- *   patch:
+ *   post:
  *     summary: Invite another person to contribute the album
  *     tags:
  *       - Album
@@ -215,7 +222,7 @@ routes.patch('/reply/:accessToken', validate(replyValidation), replyInviteContri
  *       - Album
  *     parameters:
  *      - in: path
- *        name: albumid
+ *        name: id
  *        required: true
  *        type: string
  *        format: uuid

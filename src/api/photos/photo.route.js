@@ -64,7 +64,9 @@ const routes = express.Router()
  *     security:
  *     - accessToken: []
  */
-routes.post('/', auth, uploadSingle, addPhoto)
+routes.post('/', auth,
+  // validate(createValidation), //Need to check after
+  uploadSingle, addPhoto)
 
 /**
  * @swagger
@@ -75,18 +77,15 @@ routes.post('/', auth, uploadSingle, addPhoto)
  *       - Photo
  *     parameters:
  *      - in: path
- *        name: albumid
+ *        name: id
  *        required: true
  *        type: string
  *        format: uuid
- *        description: Album id to delete
  *     responses:
  *       200:
- *         description: Photo Added Successfully.
+ *         description: Get one photo successfully.
  *       400:
  *         description: Bad Request
- *       409:
- *         description: Conflict
  *     security:
  *     - accessToken: []
  */
@@ -107,7 +106,7 @@ routes.get('/getone/:id', auth, getPhoto)
  *        type: string
  *     responses:
  *       200:
- *         description: Get all photos Successfully.
+ *         description: Get all photos successfully.
  *       400:
  *         description: Bad Request
  *     security:
@@ -124,25 +123,21 @@ routes.get('/getall', auth, validate(getAllValidation), getAllPhoto)
  *       - Photo
  *     parameters:
  *      - in: body
- *        name: body
+ *        name: albumId
  *        required: true
- *        schema:
- *          type: object
- *          properties:
- *            photoname:
- *              type: string
- *            email:
- *              type: string
- *            password:
- *              type: string
- *        description: Created photo object
+ *        type: string
+ *        format: uuid
+ *      - in: path
+ *        name: id
+ *        required: true
+ *        type: string
+ *        format: uuid
+ *        description: Move photo from this album to another album
  *     responses:
  *       200:
- *         description: photo Added Successfully.
+ *         description: Photo move successfully.
  *       400:
  *         description: Bad Request
- *       409:
- *         description: Conflict
  *     security:
  *     - accessToken: []
  */
@@ -156,26 +151,27 @@ routes.patch('/move/:id', auth, movePhoto)
  *     tags:
  *       - Photo
  *     parameters:
- *      - in: body
- *        name: body
+ *      - in: path
+ *        name: id
  *        required: true
+ *        type: string
+ *        format: uuid
+ *      - in: body
  *        schema:
  *          type: object
  *          properties:
- *            photoname:
+ *            name: string
+ *            status:
  *              type: string
- *            email:
- *              type: string
- *            password:
- *              type: string
- *        description: Created photo object
+ *              enum:
+ *                - Public
+ *                - Private
+ *        description: Update photo object
  *     responses:
  *       200:
- *         description: photo Added Successfully.
+ *         description: photo update successfully.
  *       400:
  *         description: Bad Request
- *       409:
- *         description: Conflict
  *     security:
  *     - accessToken: []
  */
@@ -189,26 +185,17 @@ routes.patch('/:id', auth, updatePhoto)
  *     tags:
  *       - Photo
  *     parameters:
- *      - in: body
- *        name: body
+ *      - in: path
+ *        name: id
  *        required: true
- *        schema:
- *          type: object
- *          properties:
- *            photoname:
- *              type: string
- *            email:
- *              type: string
- *            password:
- *              type: string
- *        description: Created photo object
+ *        type: string
+ *        format: uuid
+ *        description: Photo id to delete
  *     responses:
  *       200:
- *         description: photo Added Successfully.
+ *         description: Photo delete successfully.
  *       400:
  *         description: Bad Request
- *       409:
- *         description: Conflict
  *     security:
  *     - accessToken: []
  */

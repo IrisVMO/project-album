@@ -4,7 +4,7 @@ const { APIResponse } = require('../../configs/config')
 const { ValidationError } = require('express-validation')
 
 function errorHandler (err, req, res, next) {
-  console.log('err:', err)
+  // console.log('err:', err)
   const code = err.statusCode || err.code || StatusCodes.INTERNAL_SERVER_ERROR
   let errorCode = err.code
   let { message } = err

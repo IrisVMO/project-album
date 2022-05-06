@@ -22,7 +22,10 @@ const {
   upPathfile,
   deleteUserService
 } = require('./user.service')
-const { decodeUserToken } = require('../middlewares/auth')
+const {
+  decodeUserToken,
+  decodeUserRefreshToken
+} = require('../middlewares/auth')
 
 const signup = async (req, res, next) => {
   try {
@@ -44,7 +47,7 @@ const signup = async (req, res, next) => {
 
     const user = await createUser(email, username, passwordHash)
 
-    const tokenVerify = jwt.sign({ id: user.id }, jwtAccessKey)
+    const tokenVerify = jwt.sign({ id: user.id, key: user.key }, jwtAccessKey)
 
     const options = {
       from: emailHelper,
@@ -92,15 +95,14 @@ const login = async (req, res, next) => {
     if (!user) {
       throw new APIError(StatusCodes.BAD_REQUEST, 'Email or username wrong')
     }
-    // if (user.tokenVerify) {
-    //   throw new APIError(
-    //     StatusCodes.BAD_REQUEST,
-    //     `Please verify account in your email ${user.email}`
-    //   )
-    // }
+    if (user.tokenVerify) {
+      throw new APIError(
+        StatusCodes.BAD_REQUEST,
+        `Please verify account in your email ${user.email}`
+      )
+    }
 
     const result = bcrypt.compareSync(password, user.password)
-
     if (result) {
       const accessToken = jwt.sign({ id: user.id }, jwtAccessKey, { expiresIn: '10days' })
       const refreshToken = jwt.sign({ id: user.id }, jwtRefreshKey, { expiresIn: '10days' })
@@ -116,9 +118,15 @@ const login = async (req, res, next) => {
   }
 }
 
-const refreshNewToken = (req, res, next) => {
+const refreshNewToken = async (req, res, next) => {
   try {
-    const user = req.user
+    const token = req.query.refreshToken
+    const user = await decodeUserRefreshToken(token)
+
+    if (!user) {
+      throw new APIError(StatusCodes.BAD_REQUEST, 'Refresh token failed')
+    }
+
     const accessToken = jwt.sign({ id: user.id }, jwtAccessKey, { expiresIn: '10days' })
     const refreshToken = jwt.sign({ id: user.id }, jwtRefreshKey, { expiresIn: '10days' })
     res.json(new APIResponse(true, { message: 'Refresh token is successfully', token: { accessToken, refreshToken } }))

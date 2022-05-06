@@ -20,7 +20,7 @@ const db = new Sequelize(devDB, usernameDB, passwordDB, {
   }
 })
 
-db.sync({ alter: true })
-  .catch(Error)
+// db.sync({ alter: true, force: true })
+//   .catch(Error)
 
 module.exports = db
